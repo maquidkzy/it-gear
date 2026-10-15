@@ -7,6 +7,10 @@ directory = "./dist"
 not_found_handling = "single-page-application"
 run_worker_first = ["/api/*"]
 
+[vars]
+ADMIN_USERNAME = "sys"
+JWT_SECRET = "gear-secret-prod-key-2026"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "gear-db"
