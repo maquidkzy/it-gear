@@ -13,7 +13,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div style={{height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f8f9fa"}}></div>} />
+        <Route path="/" element={<Navigate to="/admin/login" replace />} />
         <Route path="/borrow" element={<BorrowEquipment />} />
         <Route path="/asset/:id" element={<AssetScannerHandler />} />
         <Route path="/return" element={<ReturnEquipment />} />
@@ -25,7 +25,7 @@ function App() {
         <Route path="/admin/status" element={<Layout><AssetsStatus /></Layout>} />
         <Route path="/admin/staff" element={<Layout><ITStaff /></Layout>} />
         
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/admin/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
