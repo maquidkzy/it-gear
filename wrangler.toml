@@ -1,8 +1,8 @@
-name = "gear"
+name = "it-gear"
 compatibility_date = "2024-09-30"
 pages_build_output_dir = "dist"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "gear-db"
-database_id = "local-gear-db-id"
+database_id = "e81559f8-00dc-4bdd-b91e-8db57058475d"
