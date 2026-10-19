@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ImageCropModalProps {
   isOpen: boolean;
@@ -176,12 +177,12 @@ export default function ImageCropModal({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
         className="modal-backdrop fade show"
-        style={{ zIndex: 1060 }}
+        style={{ zIndex: 1200 }}
         onClick={onClose}
       ></div>
 
@@ -190,7 +191,7 @@ export default function ImageCropModal({
         className="modal fade show d-block"
         tabIndex={-1}
         role="dialog"
-        style={{ zIndex: 1065 }}
+        style={{ zIndex: 1205 }}
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -370,6 +371,7 @@ export default function ImageCropModal({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
