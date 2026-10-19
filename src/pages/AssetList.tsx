@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useDataTable } from '../hooks/useDataTable';
 import { DataTableTopControls, DataTableBottomControls } from '../components/DataTableControls';
+import ImageCropModal from '../components/ImageCropModal';
 
 export default function AssetList() {
   const [assets, setAssets] = useState<any[]>([]);
@@ -19,6 +20,8 @@ export default function AssetList() {
   const [formStock, setFormStock] = useState<number>(1);
   const [formSerial, setFormSerial] = useState('');
   const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
 
   const filterAsset = useCallback((asset: any, search: string) => {
     return (
@@ -52,9 +55,11 @@ export default function AssetList() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageBase64(reader.result as string);
+        setRawImageSrc(reader.result as string);
+        setIsCropModalOpen(true);
       };
       reader.readAsDataURL(file);
+      e.target.value = '';
     }
   };
 
@@ -78,6 +83,8 @@ export default function AssetList() {
     setFormStock(1);
     setFormSerial('');
     setImageBase64(null);
+    setRawImageSrc(null);
+    setIsCropModalOpen(false);
 
     const el = document.getElementById('add-new-record');
     if (el && (window as any).bootstrap) {
@@ -97,6 +104,8 @@ export default function AssetList() {
     setFormStock(asset.stock ?? 1);
     setFormSerial(asset.serialNumber || '');
     setImageBase64(asset.imageUrl || null);
+    setRawImageSrc(asset.imageUrl || null);
+    setIsCropModalOpen(false);
 
     const el = document.getElementById('add-new-record');
     if (el && (window as any).bootstrap) {
@@ -350,44 +359,74 @@ export default function AssetList() {
                 </div>
               </div>
 
-              {/* Image Upload Placeholder */}
+              {/* Image Upload with Square Crop */}
               <div className="col-sm-12">
-                <label className="form-label">Asset Image (100x100 px)</label>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <label className="form-label mb-0">Asset Image</label>
+                  <span className="badge bg-label-primary" style={{ fontSize: '0.72rem' }}>
+                    Square 200×200 px
+                  </span>
+                </div>
                 <div
-                  className="d-flex align-items-center border rounded p-4 border-dashed cursor-pointer position-relative"
+                  className="d-flex align-items-center border rounded p-3 position-relative"
                   style={{
-                    borderStyle: 'dashed !important',
+                    borderStyle: 'dashed',
+                    borderWidth: '2px',
+                    borderColor: '#d9dee3',
                     justifyContent: 'center',
-                    height: '120px',
+                    minHeight: '130px',
                     backgroundColor: '#f8f9fa',
                   }}
                 >
-                  <label className="text-center w-100 cursor-pointer mb-0" style={{ cursor: 'pointer' }}>
-                    <input type="file" accept="image/*" className="d-none" onChange={handleImageUpload} />
-                    {imageBase64 ? (
-                      <div className="position-relative d-inline-block">
+                  {imageBase64 ? (
+                    <div className="d-flex align-items-center gap-3 w-100 justify-content-center py-1">
+                      <div className="position-relative">
                         <img
                           src={imageBase64}
                           alt="Preview"
+                          className="border shadow-sm"
                           style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '8px' }}
                         />
                       </div>
-                    ) : (
-                      <>
-                        <i className="icon-base ri ri-upload-cloud-2-line fs-3 text-secondary mb-2 d-block"></i>
-                        <p className="mb-0 text-muted">Click to upload image</p>
-                      </>
-                    )}
-                  </label>
-                  {imageBase64 && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-icon btn-danger position-absolute top-0 end-0 m-2"
-                      onClick={() => setImageBase64(null)}
-                      title="Remove image"
+                      <div className="d-flex flex-column gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary d-flex align-items-center"
+                          onClick={() => {
+                            setRawImageSrc(rawImageSrc || imageBase64);
+                            setIsCropModalOpen(true);
+                          }}
+                        >
+                          <i className="icon-base ri ri-crop-line me-1"></i> Adjust / Re-crop
+                        </button>
+                        <label className="btn btn-sm btn-outline-secondary d-flex align-items-center mb-0 cursor-pointer" style={{ cursor: 'pointer' }}>
+                          <i className="icon-base ri ri-upload-2-line me-1"></i> Change Image
+                          <input type="file" accept="image/*" className="d-none" onChange={handleImageUpload} />
+                        </label>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger d-flex align-items-center"
+                          onClick={() => {
+                            setImageBase64(null);
+                            setRawImageSrc(null);
+                          }}
+                        >
+                          <i className="icon-base ri ri-delete-bin-line me-1"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      className="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 cursor-pointer mb-0 py-3"
+                      style={{ cursor: 'pointer' }}
                     >
-                      <i className="icon-base ri ri-close-line"></i>
-                    </button>
+                      <input type="file" accept="image/*" className="d-none" onChange={handleImageUpload} />
+                      <i className="icon-base ri ri-upload-cloud-2-line fs-2 text-primary mb-2"></i>
+                      <p className="mb-1 text-dark fw-medium">Click to upload image</p>
+                      <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                        Auto-crop & position as square (200×200 px)
+                      </small>
+                    </label>
                   )}
                 </div>
               </div>
@@ -586,6 +625,21 @@ export default function AssetList() {
           </div>
         </div>
       </div>
+
+      {/* Image Crop & Reposition Modal */}
+      <ImageCropModal
+        isOpen={isCropModalOpen}
+        imageSrc={rawImageSrc}
+        targetSize={200}
+        onClose={() => {
+          setIsCropModalOpen(false);
+          // Keep rawImageSrc if user already has an image, otherwise null
+        }}
+        onCropSave={(croppedBase64) => {
+          setImageBase64(croppedBase64);
+          setIsCropModalOpen(false);
+        }}
+      />
     </>
   );
 }
