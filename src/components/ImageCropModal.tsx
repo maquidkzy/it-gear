@@ -48,7 +48,7 @@ export default function ImageCropModal({
     };
     img.onerror = () => {
       setImageLoaded(false);
-      setLoadError('เบราว์เซอร์ไม่สามารถถอดรหัสรูปภาพนี้ได้ (เช่น ไฟล์ HEIC จาก iPhone) กรุณาใช้ไฟล์ JPG, PNG หรือ WebP');
+      setLoadError('Your browser cannot decode this image format. Please upload a JPG, PNG, or WebP image.');
     };
     img.src = imageSrc;
   }, [imageSrc]);
@@ -231,7 +231,7 @@ export default function ImageCropModal({
                       {loadError}
                     </p>
                     <button type="button" className="btn btn-sm btn-outline-light mt-1" onClick={onClose}>
-                      ปิดหน้าต่าง
+                      Close
                     </button>
                   </div>
                 ) : !imageLoaded ? (

@@ -84,8 +84,8 @@ export default function AssetList() {
 
     if (isHeic) {
       Swal.fire({
-        title: 'กำลังแปลงรูปภาพ iPhone (HEIC)...',
-        text: 'กรุณารอสักครู่ ระบบกำลังแปลงภาพเป็น JPEG เพื่อให้ตัดรูปได้',
+        title: 'Processing iPhone Image...',
+        text: 'Converting HEIC format for web compatibility. Please wait...',
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
@@ -104,10 +104,10 @@ export default function AssetList() {
         reader.readAsDataURL(convertedBlob);
       } catch (err) {
         Swal.fire({
-          icon: 'error',
-          title: 'ไม่สามารถแปลงไฟล์ HEIC ได้',
-          text: 'เบราว์เซอร์ไม่สามารถถอดรหัสรูปภาพ HEIC นี้ได้ กรุณาใช้ไฟล์รูปภาพนามสกุล JPG, PNG หรือ WebP แทน หรือตั้งค่ากล้อง iPhone เป็น Most Compatible ครับ',
-          confirmButtonText: 'ตกลง',
+          icon: 'warning',
+          title: 'Unsupported Image Format',
+          text: 'This HEIC photo cannot be decoded by your web browser. Please use JPG, PNG, or WebP. (Tip: When selecting from your iPhone Photos library, iOS converts automatically if using the standard photo picker).',
+          confirmButtonText: 'OK',
           customClass: { confirmButton: 'btn btn-primary' },
           buttonsStyling: false,
         });
@@ -463,7 +463,7 @@ export default function AssetList() {
                         </button>
                         <label className="btn btn-sm btn-outline-secondary d-flex align-items-center mb-0 cursor-pointer" style={{ cursor: 'pointer' }}>
                           <i className="icon-base ri ri-upload-2-line me-1"></i> Change Image
-                          <input type="file" accept="image/*,.heic,.heif" className="d-none" onChange={handleImageUpload} />
+                          <input type="file" accept="image/jpeg,image/png,image/webp" className="d-none" onChange={handleImageUpload} />
                         </label>
                         <button
                           type="button"
@@ -482,11 +482,11 @@ export default function AssetList() {
                       className="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 cursor-pointer mb-0 py-3"
                       style={{ cursor: 'pointer' }}
                     >
-                      <input type="file" accept="image/*,.heic,.heif" className="d-none" onChange={handleImageUpload} />
+                      <input type="file" accept="image/jpeg,image/png,image/webp" className="d-none" onChange={handleImageUpload} />
                       <i className="icon-base ri ri-upload-cloud-2-line fs-2 text-primary mb-2"></i>
                       <p className="mb-1 text-dark fw-medium">Click to upload image</p>
                       <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                        รองรับ JPG, PNG, WebP, HEIC &bull; ย่อขนาดเป็น 200×200 px
+                        Supports JPG, PNG, WebP &bull; Auto-resized to 200×200 px
                       </small>
                     </label>
                   )}
