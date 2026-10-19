@@ -21,6 +21,7 @@ export default function ImageCropModal({
   const [offsetY, setOffsetY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -32,6 +33,7 @@ export default function ImageCropModal({
   useEffect(() => {
     if (!imageSrc) return;
     setImageLoaded(false);
+    setLoadError(null);
     setZoom(1);
     setRotation(0);
     setOffsetX(0);
@@ -42,6 +44,11 @@ export default function ImageCropModal({
     img.onload = () => {
       imgRef.current = img;
       setImageLoaded(true);
+      setLoadError(null);
+    };
+    img.onerror = () => {
+      setImageLoaded(false);
+      setLoadError('เบราว์เซอร์ไม่สามารถถอดรหัสรูปภาพนี้ได้ (เช่น ไฟล์ HEIC จาก iPhone) กรุณาใช้ไฟล์ JPG, PNG หรือ WebP');
     };
     img.src = imageSrc;
   }, [imageSrc]);
@@ -217,12 +224,22 @@ export default function ImageCropModal({
                   touchAction: 'none',
                 }}
               >
-                {!imageLoaded && (
+                {loadError ? (
+                  <div className="d-flex flex-column justify-content-center align-items-center h-100 p-3 text-center text-white">
+                    <i className="icon-base ri ri-error-warning-line text-warning fs-1 mb-2"></i>
+                    <p className="text-warning fw-medium mb-2" style={{ fontSize: '0.85rem' }}>
+                      {loadError}
+                    </p>
+                    <button type="button" className="btn btn-sm btn-outline-light mt-1" onClick={onClose}>
+                      ปิดหน้าต่าง
+                    </button>
+                  </div>
+                ) : !imageLoaded ? (
                   <div className="d-flex justify-content-center align-items-center h-100 text-white">
                     <div className="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
                     <span>Loading image...</span>
                   </div>
-                )}
+                ) : null}
                 <canvas
                   ref={canvasRef}
                   width={VIEWPORT_SIZE}
@@ -344,7 +361,7 @@ export default function ImageCropModal({
                 type="button"
                 className="btn btn-primary d-flex align-items-center"
                 onClick={handleSave}
-                disabled={!imageLoaded}
+                disabled={!imageLoaded || !!loadError}
               >
                 <i className="icon-base ri ri-check-line me-1"></i>
                 Crop & Save (200×200)

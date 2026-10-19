@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useDataTable } from '../hooks/useDataTable';
 import { DataTableTopControls, DataTableBottomControls } from '../components/DataTableControls';
 import ImageCropModal from '../components/ImageCropModal';
+import Swal from 'sweetalert2';
 
 export default function AssetList() {
   const [assets, setAssets] = useState<any[]>([]);
@@ -50,17 +51,78 @@ export default function AssetList() {
     pageNumbers,
   } = useDataTable(assets, filterAsset, 7);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setRawImageSrc(reader.result as string);
-        setIsCropModalOpen(true);
-      };
-      reader.readAsDataURL(file);
-      e.target.value = '';
+  const convertHeicToJpeg = async (file: File): Promise<Blob> => {
+    if (!(window as any).heic2any) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => reject(new Error('Failed to load HEIC converter'));
+        document.head.appendChild(script);
+      });
     }
+    const heic2any = (window as any).heic2any;
+    const result = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.88,
+    });
+    return Array.isArray(result) ? result[0] : result;
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fileNameLower = file.name.toLowerCase();
+    const isHeic =
+      fileNameLower.endsWith('.heic') ||
+      fileNameLower.endsWith('.heif') ||
+      file.type === 'image/heic' ||
+      file.type === 'image/heif';
+
+    if (isHeic) {
+      Swal.fire({
+        title: 'กำลังแปลงรูปภาพ iPhone (HEIC)...',
+        text: 'กรุณารอสักครู่ ระบบกำลังแปลงภาพเป็น JPEG เพื่อให้ตัดรูปได้',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      try {
+        const convertedBlob = await convertHeicToJpeg(file);
+        Swal.close();
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setRawImageSrc(reader.result as string);
+          setIsCropModalOpen(true);
+        };
+        reader.readAsDataURL(convertedBlob);
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'ไม่สามารถแปลงไฟล์ HEIC ได้',
+          text: 'เบราว์เซอร์ไม่สามารถถอดรหัสรูปภาพ HEIC นี้ได้ กรุณาใช้ไฟล์รูปภาพนามสกุล JPG, PNG หรือ WebP แทน หรือตั้งค่ากล้อง iPhone เป็น Most Compatible ครับ',
+          confirmButtonText: 'ตกลง',
+          customClass: { confirmButton: 'btn btn-primary' },
+          buttonsStyling: false,
+        });
+      }
+      e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setRawImageSrc(reader.result as string);
+      setIsCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const copyLink = (id: string) => {
@@ -401,7 +463,7 @@ export default function AssetList() {
                         </button>
                         <label className="btn btn-sm btn-outline-secondary d-flex align-items-center mb-0 cursor-pointer" style={{ cursor: 'pointer' }}>
                           <i className="icon-base ri ri-upload-2-line me-1"></i> Change Image
-                          <input type="file" accept="image/*" className="d-none" onChange={handleImageUpload} />
+                          <input type="file" accept="image/*,.heic,.heif" className="d-none" onChange={handleImageUpload} />
                         </label>
                         <button
                           type="button"
@@ -420,11 +482,11 @@ export default function AssetList() {
                       className="d-flex flex-column align-items-center justify-content-center text-center w-100 h-100 cursor-pointer mb-0 py-3"
                       style={{ cursor: 'pointer' }}
                     >
-                      <input type="file" accept="image/*" className="d-none" onChange={handleImageUpload} />
+                      <input type="file" accept="image/*,.heic,.heif" className="d-none" onChange={handleImageUpload} />
                       <i className="icon-base ri ri-upload-cloud-2-line fs-2 text-primary mb-2"></i>
                       <p className="mb-1 text-dark fw-medium">Click to upload image</p>
                       <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                        Auto-crop & position as square (200×200 px)
+                        รองรับ JPG, PNG, WebP, HEIC &bull; ย่อขนาดเป็น 200×200 px
                       </small>
                     </label>
                   )}
