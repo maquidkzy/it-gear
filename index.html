@@ -1,5 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html
+  lang="en"
+  class="layout-navbar-fixed layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-skin="default"
+  data-bs-theme="light"
+  data-assets-path="/assets/"
+  data-template="vertical-menu-template">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
@@ -21,12 +28,31 @@
     <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
 
     <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/assets/vendor/libs/pickr/pickr-themes.css" />
     <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
     <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
     <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+
+    <!-- Helpers -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+
+    <!-- Pickr for Template Customizer Color Picker -->
+    <script src="/assets/vendor/libs/pickr/pickr.js"></script>
+
+    <!-- Template Customizer & Config -->
+    <script src="/assets/vendor/js/template-customizer.js"></script>
+    <style>a.template-customizer-open-btn[tabindex="-1"] { display: none !important; }</style>
+    <script src="/assets/js/config.js"></script>
   </head>
-  <body style="background-color: white !important;">
+  <body>
     <div id="root"></div>
+
+    <!-- Hidden Theme Toggles for Template Customizer sync logic -->
+    <div style="display: none;">
+      <button data-bs-theme-value="light"><i data-icon="sun-line"></i></button>
+      <button data-bs-theme-value="dark"><i data-icon="moon-clear-line"></i></button>
+      <button data-bs-theme-value="system"><i data-icon="computer-line"></i></button>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
   </body>

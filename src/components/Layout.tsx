@@ -25,6 +25,28 @@ export default function Layout({ children }: { children: ReactNode }) {
       .catch((err) => navigate('/admin/login?reason=' + encodeURIComponent(err.message)));
   }, [navigate]);
 
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const customizer = document.querySelector('#template-customizer');
+      if (!customizer || !customizer.classList.contains('template-customizer-open')) return;
+
+      const target = e.target as HTMLElement;
+      if (
+        customizer.contains(target) ||
+        target.closest('#nav-theme') ||
+        target.closest('.pcr-app')
+      ) {
+        return;
+      }
+
+      document.querySelector<HTMLElement>('.template-customizer-close-btn')?.click() ||
+        customizer.classList.remove('template-customizer-open');
+    };
+
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, []);
+
   if (authChecking) return <div className="p-5 text-center">Loading Admin...</div>;
 
   const location = useLocation();
@@ -152,7 +174,17 @@ export default function Layout({ children }: { children: ReactNode }) {
                     className="nav-link hide-arrow btn btn-icon btn-text-secondary rounded-pill"
                     id="nav-theme"
                     href="#"
-                    onClick={() => document.querySelector<HTMLElement>('.template-customizer-open-btn')?.click()}>
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const customizer = document.querySelector('#template-customizer');
+                      if (customizer?.classList.contains('template-customizer-open')) {
+                        document.querySelector<HTMLElement>('.template-customizer-close-btn')?.click() ||
+                          customizer.classList.remove('template-customizer-open');
+                      } else {
+                        document.querySelector<HTMLElement>('.template-customizer-open-btn')?.click() ||
+                          customizer?.classList.add('template-customizer-open');
+                      }
+                    }}>
                     <i className="icon-base ri ri-sun-line icon-22px theme-icon-active"></i>
                     <span className="d-none ms-2" id="nav-theme-text">Toggle theme</span>
                   </a>
