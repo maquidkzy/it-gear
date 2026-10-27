@@ -88,17 +88,17 @@ export default function BorrowEquipment() {
             text: 'ระบบได้บันทึกข้อมูลเรียบร้อยแล้ว',
             icon: 'success',
             confirmButtonText: 'กลับสู่หน้าหลัก',
-            customClass: { confirmButton: 'btn btn-primary' },
+            customClass: { confirmButton: 'btn btn-primary btn-lg' },
             buttonsStyling: false
           }).then(() => {
             window.location.href = '/';
           });
         } else {
           const errorData = await res.json();
-          Swal.fire({ title: 'เกิดข้อผิดพลาด', text: errorData.error || 'ไม่สามารถทำรายการได้', icon: 'error', customClass: { confirmButton: 'btn btn-primary' } });
+          Swal.fire({ title: 'เกิดข้อผิดพลาด', text: errorData.error || 'ไม่สามารถทำรายการได้', icon: 'error', customClass: { confirmButton: 'btn btn-primary btn-lg' } });
         }
       } catch (err) {
-        Swal.fire({ title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', icon: 'error', customClass: { confirmButton: 'btn btn-primary' } });
+        Swal.fire({ title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', icon: 'error', customClass: { confirmButton: 'btn btn-primary btn-lg' } });
       }
     }
 
@@ -194,7 +194,7 @@ export default function BorrowEquipment() {
                 </div>
 
                 {/* 5. Submit button */}
-                <button className="btn btn-primary d-grid w-100 mb-5" type="submit">
+                <button className="btn btn-primary btn-lg d-grid w-100 mb-5" type="submit">
                   {asset.isReturnable !== false && asset.isReturnable !== 0
                     ? 'Confirm Borrowing'
                     : 'Confirm Request'}

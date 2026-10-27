@@ -98,7 +98,7 @@ export default function ReturnEquipment() {
             text: 'Thank you for returning the equipment.',
             icon: 'success',
             confirmButtonText: 'Back to Home',
-            customClass: { confirmButton: 'btn btn-primary' },
+            customClass: { confirmButton: 'btn btn-primary btn-lg' },
             buttonsStyling: false
           }).then(() => {
             window.location.href = '/';
@@ -109,7 +109,7 @@ export default function ReturnEquipment() {
             title: 'Error',
             text: errorData.error || 'Invalid return code or IT password',
             icon: 'error',
-            customClass: { confirmButton: 'btn btn-primary' },
+            customClass: { confirmButton: 'btn btn-primary btn-lg' },
             buttonsStyling: false
           });
         }
@@ -118,7 +118,7 @@ export default function ReturnEquipment() {
           title: 'Error',
           text: 'Failed to connect to the server.',
           icon: 'error',
-          customClass: { confirmButton: 'btn btn-primary' },
+          customClass: { confirmButton: 'btn btn-primary btn-lg' },
           buttonsStyling: false
         });
       } finally {
@@ -257,7 +257,7 @@ export default function ReturnEquipment() {
                   </div>
 
                   {/* Submit Button */}
-                  <button className="btn btn-primary d-grid w-100 mb-5" type="submit" disabled={submitting}>
+                  <button className="btn btn-primary btn-lg d-grid w-100 mb-5" type="submit" disabled={submitting}>
                     {submitting ? 'Confirming...' : 'Confirm Return'}
                   </button>
                 </form>
